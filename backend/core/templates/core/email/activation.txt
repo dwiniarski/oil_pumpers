@@ -1,0 +1,2 @@
+In order to activate your account go to the following link:
+{{activation_url}}
