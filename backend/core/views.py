@@ -5,7 +5,6 @@ from core.serializers import RegistrationSerializer, ActivationSerializer, OilFi
     OilFieldSetForSaleSerializer, UserSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from core.models import OilField, User
-from django.http import JsonResponse
 from django.shortcuts import render
 
 
@@ -31,7 +30,7 @@ class UserOilFieldsList(APIView):
     def get(self, request):
         oil_fields = OilField.objects.filter(owner=request.user)
         serializer = self.serializer_class(oil_fields, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
 
 
 class UserActivation(APIView):
@@ -68,7 +67,7 @@ class OilFieldAPIView(APIView):
                 oil_field = OilField.objects.get(pk=pk, owner=request.user)
 
             serializer = self.serializer_class(oil_field)
-            return JsonResponse(serializer.data, safe=False)
+            return Response(serializer.data)
         except OilField.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -80,7 +79,7 @@ class OilFieldsList(APIView):
     def get(self, request):
         oil_fields = OilField.objects.filter(owner__isnull=True, is_for_sale=True)
         serializer = self.serializer_class(oil_fields, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
 
 
 class OilFieldBuyAPIView(APIView):
