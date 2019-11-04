@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework import status
 from core.serializers import RegistrationSerializer, ActivationSerializer, OilFieldBuySerializer, OilFieldSerializer, \
     OilFieldSetForSaleSerializer, UserSerializer
@@ -59,17 +61,33 @@ class OilFieldAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = OilFieldSerializer
 
-    def get(self, request, pk):
+    def get_object(self, request, pk):
         try:
             if request.user.is_superuser:
-                oil_field = OilField.objects.get(pk=pk)
+                return OilField.objects.get(pk=pk)
             else:
-                oil_field = OilField.objects.get(pk=pk, owner=request.user)
-
-            serializer = self.serializer_class(oil_field)
-            return Response(serializer.data)
+                return OilField.objects.get(pk=pk, owner=request.user)
         except OilField.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise NotFound
+
+
+class OilFieldGet(OilFieldAPIView):
+
+    def get(self, request, pk):
+        oil_field = self.get_object(request, pk)
+        serializer = self.serializer_class(oil_field)
+        return Response(serializer.data)
+
+
+class OilFieldChangeName(OilFieldAPIView):
+    def patch(self, request, pk):
+        oil_field = self.get_object(request, pk)
+        serializer = self.serializer_class(oil_field, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OilFieldsList(APIView):

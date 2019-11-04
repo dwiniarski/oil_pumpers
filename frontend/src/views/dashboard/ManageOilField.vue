@@ -6,9 +6,14 @@
                     <tbody>
                     <tr>
                         <td>Name</td>
-                        <td>{{oil_field.name}}</td>
+                        <td v-if="isNameEditable">
+                            <input type="text" class="form-control" v-model="oil_field.name"/>
+                        </td>
+                        <td v-if="!isNameEditable">{{oil_field.name}}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Edit</button>
+                            <button class="btn btn-primary btn-sm" v-if="isNameEditable" @click="saveName">Save</button>
+                            <button class="btn btn-primary btn-sm" v-if="!isNameEditable" @click="editName">Edit
+                            </button>
                         </td>
                     </tr>
                     <tr>
@@ -115,13 +120,14 @@
 </template>
 
 <script>
-    import {FETCH_OIL_FIELD} from "../../store/actions";
+    import {FETCH_OIL_FIELD, CHANGE_OIL_FIELD_NAME} from "../../store/actions";
 
     export default {
         name: "ManageOilField",
         data() {
             return {
-                oil_field: ''
+                oil_field: {'status':{'name':''}},
+                is_name_being_edited: false
             }
         },
         mounted() {
@@ -130,6 +136,21 @@
                     this.oil_field = response.data;
                 }
             );
+        },
+        computed: {
+            isNameEditable: function () {
+                return this.is_name_being_edited;
+            }
+        },
+        methods: {
+            editName: function () {
+                this.is_name_being_edited = true;
+            },
+            saveName: function () {
+                this.$store.dispatch(CHANGE_OIL_FIELD_NAME,{'id':this.oil_field.id,'name':this.oil_field.name}).then(
+                    this.is_name_being_edited = false
+                );
+            }
         }
     }
 </script>

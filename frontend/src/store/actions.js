@@ -9,3 +9,4 @@ export const FETCH_OIL_FIELDS_FOR_SALE = "fetchOilFieldsForSale";
 export const BUY_OIL_FIELD = "buyOilField";
 export const FETCH_MY_OIL_FIELDS = "fetchMyOilFields";
 export const FETCH_OIL_FIELD = "fetchOilField";
+export const CHANGE_OIL_FIELD_NAME = "changeOilFieldName";
