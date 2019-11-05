@@ -26,35 +26,45 @@ class SeedCommand(BaseCommand):
     def populate_factory_types(self):
         FactoryType.objects.create(pk=FactoryTypeEnum.DRILL_FACTORY.value,
                                    name=FactoryTypeEnum.DRILL_FACTORY.name,
+                                   human_name="Drill factory",
+                                   description="You need drills to drill a hole to the oil.",
                                    base_production_rate=config.DRILL_FACTORY_BASE_PRODUCTION_RATE,
                                    base_upkeep_cost=config.DRILL_FACTORY_BASE_UPKEEP_COST,
                                    build_cost=config.DRILL_FACTORY_BUILD_COST)
         FactoryType.objects.create(pk=FactoryTypeEnum.PUMP_FACTORY.value,
                                    name=FactoryTypeEnum.PUMP_FACTORY.name,
+                                   human_name="Pump factory",
+                                   description="Pumps are used to get the oil to the ground",
                                    base_production_rate=config.PUMP_FACTORY_BASE_PRODUCTION_RATE,
                                    base_upkeep_cost=config.PUMP_FACTORY_BASE_UPKEEP_COST,
                                    build_cost=config.PUMP_FACTORY_BUILD_COST)
         FactoryType.objects.create(pk=FactoryTypeEnum.PIPE_FACTORY.value,
                                    name=FactoryTypeEnum.PIPE_FACTORY.name,
+                                   human_name="Pipe factory",
+                                   description="You need pipes to pump the oil to the surface.",
                                    base_production_rate=config.PIPE_FACTORY_BASE_PRODUCTION_RATE,
                                    base_upkeep_cost=config.PIPE_FACTORY_BASE_UPKEEP_COST,
                                    build_cost=config.PIPE_FACTORY_BUILD_COST)
         FactoryType.objects.create(pk=FactoryTypeEnum.WAGON_FACTORY.value,
                                    name=FactoryTypeEnum.WAGON_FACTORY.name,
+                                   human_name="Wagon factory",
+                                   description="Wagon are needed to transport the oil to the buyer.",
                                    base_production_rate=config.WAGON_FACTORY_BASE_PRODUCTION_RATE,
                                    base_upkeep_cost=config.WAGON_FACTORY_BASE_UPKEEP_COST,
                                    build_cost=config.WAGON_FACTORY_BUILD_COST)
         FactoryType.objects.create(pk=FactoryTypeEnum.STORAGE_TANK_FACTORY.value,
                                    name=FactoryTypeEnum.STORAGE_TANK_FACTORY.name,
+                                   human_name="Storage tank factory",
+                                   description="Storage tanks are used to store oil extracted to the ground.",
                                    base_production_rate=config.STORAGE_TANK_FACTORY_BASE_PRODUCTION_RATE,
                                    base_upkeep_cost=config.STORAGE_TANK_FACTORY_BASE_UPKEEP_COST,
                                    build_cost=config.STORAGE_TANK_FACTORY_BUILD_COST)
 
     def populate_factory_states(self):
         FactoryState.objects.create(pk=FactoryStateEnum.NON_OPERATIONAL.value,
-                                    short_name=FactoryStateEnum.NON_OPERATIONAL.name, name='Non operational')
+                                    name=FactoryStateEnum.NON_OPERATIONAL.name, human_name='Non operational')
         FactoryState.objects.create(pk=FactoryStateEnum.OPERATIONAL.value,
-                                    short_name=FactoryStateEnum.OPERATIONAL.name, name='Operational')
+                                    name=FactoryStateEnum.OPERATIONAL.name, human_name='Operational')
 
     def handle(self, *args, **options):
         pass

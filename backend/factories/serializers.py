@@ -4,6 +4,12 @@ from factories.models import FactoryType, Factory, FactoryState
 from factories.enums import FactoryStateEnum
 
 
+class FactoryTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FactoryType
+        fields = '__all__'
+
+
 class FactoryBuildSerializer(serializers.Serializer):
     factory_type_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
