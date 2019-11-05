@@ -57,9 +57,9 @@ class OilFieldTestCase(APITestCase):
         oil_field.owner = user
         oil_field.is_for_sale = False
         oil_field.save()
-        url = reverse('set-for-sale-oil-field', kwargs={'pk': oil_field_id})
-        data = {'price': oil_field_selling_price}
-        response = self.client.post(url, data, format='json')
+        url = reverse('oil-field-detail', kwargs={'pk': oil_field_id})
+        data = {'id': oil_field_id, 'selling_price': oil_field_selling_price, 'is_for_sale': True}
+        response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         oil_field = OilField.objects.get(pk=oil_field_id)
         self.assertEqual(oil_field.is_for_sale, True)
