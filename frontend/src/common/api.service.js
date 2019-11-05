@@ -117,7 +117,7 @@ export const OilFieldsService = {
     fetchOilField(id) {
         return axios.get('/core/oil-fields/' + id)
     },
-    changeName(payload) {
-        return axios.patch('/core/oil-fields/' + payload.id + '/change-name', payload)
+    partialUpdate(payload) {
+        return axios.patch('/core/oil-fields/' + payload.id, payload)
     }
 }

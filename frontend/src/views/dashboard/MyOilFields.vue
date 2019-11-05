@@ -19,7 +19,7 @@
             </thead>
             <tbody>
             <tr v-for="oil_field in myOilFields">
-                <td>{{oil_field.name}}</td>
+                <td style="min-width: 200px">{{oil_field.name}}</td>
                 <td>{{oil_field.amount_drills}}</td>
                 <td>{{oil_field.amount_pipes}}</td>
                 <td>{{oil_field.amount_pumps}}</td>
@@ -52,11 +52,6 @@
         },
         mounted() {
             this.$store.dispatch(FETCH_MY_OIL_FIELDS);
-        },
-        methods: {
-            manage: function (id) {
-                alert("Manage clicked");
-            }
         }
     }
 </script>

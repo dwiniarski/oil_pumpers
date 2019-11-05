@@ -8,7 +8,8 @@ import {
     BUY_OIL_FIELD,
     FETCH_MY_OIL_FIELDS,
     FETCH_OIL_FIELD,
-    CHANGE_OIL_FIELD_NAME
+    CHANGE_OIL_FIELD_NAME,
+    CHANGE_OIL_FIELD_SELLING_PRICE
 } from '../actions'
 import {OilFieldsService} from "../../common/api.service";
 
@@ -45,7 +46,10 @@ const actions = {
         return OilFieldsService.fetchOilField(payload.id);
     },
     [CHANGE_OIL_FIELD_NAME](context, payload) {
-        return OilFieldsService.changeName(payload);
+        return OilFieldsService.partialUpdate(payload);
+    },
+    [CHANGE_OIL_FIELD_SELLING_PRICE](context, payload) {
+        return OilFieldsService.partialUpdate(payload);
     }
 }
 const mutations = {

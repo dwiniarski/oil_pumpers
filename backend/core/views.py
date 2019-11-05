@@ -71,15 +71,13 @@ class OilFieldAPIView(APIView):
             raise NotFound
 
 
-class OilFieldGet(OilFieldAPIView):
+class OilFieldDetail(OilFieldAPIView):
 
     def get(self, request, pk):
         oil_field = self.get_object(request, pk)
         serializer = self.serializer_class(oil_field)
         return Response(serializer.data)
 
-
-class OilFieldChangeName(OilFieldAPIView):
     def patch(self, request, pk):
         oil_field = self.get_object(request, pk)
         serializer = self.serializer_class(oil_field, data=request.data, partial=True)
@@ -106,19 +104,6 @@ class OilFieldBuyAPIView(APIView):
 
     def post(self, request, pk):
         serializer = self.serializer_class(data={'oil_field_id': pk, 'user_id': request.user.id})
-        if serializer.is_valid():
-            serializer.save()
-            return Response({}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class OilFieldSetForSaleAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = OilFieldSetForSaleSerializer
-
-    def post(self, request, pk):
-        serializer = self.serializer_class(
-            data={'oil_field_id': pk, 'user_id': request.user.id, 'price': request.data['price']})
         if serializer.is_valid():
             serializer.save()
             return Response({}, status=status.HTTP_200_OK)

@@ -41,6 +41,9 @@
                     </tbody>
                 </table>
             </div>
+
+        </div>
+        <div class="row">
             <div class="col-sm">
                 <table class="table table-striped table-dark table-bordered" style="width:100%">
                     <tbody>
@@ -106,9 +109,14 @@
                     </tr>
                     <tr>
                         <td>Selling price</td>
-                        <td>{{oil_field.selling_price | formatToCurrency }}</td>
+                        <td v-if="!isPriceEditable">{{oilFieldPrice| formatToCurrency }}</td>
+                        <td v-if="isPriceEditable"><input type="text" class="form-control"
+                                                          v-model="oil_field.selling_price"/></td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Change</button>
+                            <button v-if="!isPriceEditable" class="btn btn-primary btn-sm" @click="editPrice">Change
+                            </button>
+                            <button v-if="isPriceEditable" class="btn btn-primary btn-sm" @click="savePrice">Save
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -120,14 +128,15 @@
 </template>
 
 <script>
-    import {FETCH_OIL_FIELD, CHANGE_OIL_FIELD_NAME} from "../../store/actions";
+    import {FETCH_OIL_FIELD, CHANGE_OIL_FIELD_NAME, CHANGE_OIL_FIELD_SELLING_PRICE} from "../../store/actions";
 
     export default {
         name: "ManageOilField",
         data() {
             return {
-                oil_field: {'status':{'name':''}},
-                is_name_being_edited: false
+                oil_field: {'status': {'name': ''}, 'selling_price': ''},
+                is_name_being_edited: false,
+                is_price_being_edited: false
             }
         },
         mounted() {
@@ -140,16 +149,38 @@
         computed: {
             isNameEditable: function () {
                 return this.is_name_being_edited;
+            },
+            isPriceEditable: function () {
+                return this.is_price_being_edited;
+            },
+            oilFieldPrice: function () {
+                return this.oil_field.selling_price;
             }
         },
         methods: {
             editName: function () {
                 this.is_name_being_edited = true;
             },
+            editPrice: function () {
+                this.is_price_being_edited = true;
+            },
             saveName: function () {
-                this.$store.dispatch(CHANGE_OIL_FIELD_NAME,{'id':this.oil_field.id,'name':this.oil_field.name}).then(
+                this.$store.dispatch(CHANGE_OIL_FIELD_NAME, {
+                    'id': this.oil_field.id,
+                    'name': this.oil_field.name
+                }).then(
                     this.is_name_being_edited = false
                 );
+            },
+            savePrice: function () {
+                this.$store.dispatch(CHANGE_OIL_FIELD_SELLING_PRICE, {
+                    'id': this.oil_field.id,
+                    'selling_price': this.oil_field.selling_price
+                }).then(
+                    this.is_price_being_edited = false,
+                ).catch(({response}) => {
+                    alert(response.data.selling_price);
+                });
             }
         }
     }

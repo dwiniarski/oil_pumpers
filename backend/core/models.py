@@ -52,7 +52,7 @@ class OilField(models.Model):
     required_drilling_depth = models.IntegerField(null=False)
     volume_starting = models.IntegerField()
     volume_left = models.IntegerField()
-    selling_price = models.IntegerField(default=0)
+    selling_price = models.PositiveIntegerField(default=0)
     is_for_sale = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     amount_drills = models.IntegerField(default=0)
