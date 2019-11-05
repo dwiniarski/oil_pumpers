@@ -9,7 +9,8 @@ import {
     FETCH_MY_OIL_FIELDS,
     FETCH_OIL_FIELD,
     CHANGE_OIL_FIELD_NAME,
-    CHANGE_OIL_FIELD_SELLING_PRICE
+    CHANGE_OIL_FIELD_SELLING_PRICE,
+    CHANGE_OIL_FIELD_IS_FOR_SALE
 } from '../actions'
 import {OilFieldsService} from "../../common/api.service";
 
@@ -50,7 +51,10 @@ const actions = {
     },
     [CHANGE_OIL_FIELD_SELLING_PRICE](context, payload) {
         return OilFieldsService.partialUpdate(payload);
-    }
+    },
+    [CHANGE_OIL_FIELD_IS_FOR_SALE](context, payload) {
+        return OilFieldsService.partialUpdate(payload);
+    },
 }
 const mutations = {
     [SET_OIL_FIELDS_FOR_SALE]: (state, payload) => {

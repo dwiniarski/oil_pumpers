@@ -102,14 +102,28 @@
                     </tr>
                     <tr>
                         <td>Is for sale</td>
-                        <td>{{oil_field.is_for_sale}}</td>
+                        <td v-if="!isForSaleEditable">{{oil_field.is_for_sale}}</td>
+                        <td v-if="isForSaleEditable">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       v-model="oil_field.is_for_sale" id="is_for_sale_checkbox"/>
+                                <label class="form-check-label" for="is_for_sale_checkbox">
+                                    {{oil_field.is_for_sale}}
+                                </label>
+                            </div>
+                        </td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Change</button>
+                            <button class="btn btn-primary btn-sm" v-if="!isForSaleEditable" @click="editForSale">
+                                Change
+                            </button>
+                            <button class="btn btn-primary btn-sm" v-if="isForSaleEditable" @click="saveIsForSale">
+                                Save
+                            </button>
                         </td>
                     </tr>
                     <tr>
                         <td>Selling price</td>
-                        <td v-if="!isPriceEditable">{{oilFieldPrice| formatToCurrency }}</td>
+                        <td v-if="!isPriceEditable">{{oil_field.selling_price| formatToCurrency }}</td>
                         <td v-if="isPriceEditable"><input type="text" class="form-control"
                                                           v-model="oil_field.selling_price"/></td>
                         <td>
@@ -128,7 +142,12 @@
 </template>
 
 <script>
-    import {FETCH_OIL_FIELD, CHANGE_OIL_FIELD_NAME, CHANGE_OIL_FIELD_SELLING_PRICE} from "../../store/actions";
+    import {
+        FETCH_OIL_FIELD,
+        CHANGE_OIL_FIELD_NAME,
+        CHANGE_OIL_FIELD_SELLING_PRICE,
+        CHANGE_OIL_FIELD_IS_FOR_SALE
+    } from "../../store/actions";
 
     export default {
         name: "ManageOilField",
@@ -136,7 +155,8 @@
             return {
                 oil_field: {'status': {'name': ''}, 'selling_price': ''},
                 is_name_being_edited: false,
-                is_price_being_edited: false
+                is_price_being_edited: false,
+                is_for_sale_being_edited: false
             }
         },
         mounted() {
@@ -153,8 +173,8 @@
             isPriceEditable: function () {
                 return this.is_price_being_edited;
             },
-            oilFieldPrice: function () {
-                return this.oil_field.selling_price;
+            isForSaleEditable: function () {
+                return this.is_for_sale_being_edited;
             }
         },
         methods: {
@@ -163,6 +183,9 @@
             },
             editPrice: function () {
                 this.is_price_being_edited = true;
+            },
+            editForSale: function () {
+                this.is_for_sale_being_edited = true;
             },
             saveName: function () {
                 this.$store.dispatch(CHANGE_OIL_FIELD_NAME, {
@@ -180,6 +203,16 @@
                     this.is_price_being_edited = false,
                 ).catch(({response}) => {
                     alert(response.data.selling_price);
+                });
+            },
+            saveIsForSale: function () {
+                this.$store.dispatch(CHANGE_OIL_FIELD_IS_FOR_SALE, {
+                    'id': this.oil_field.id,
+                    'is_for_sale': this.oil_field.is_for_sale
+                }).then(
+                    this.is_for_sale_being_edited = false,
+                ).catch(({response}) => {
+                    alert(response.data.is_for_sale);
                 });
             }
         }

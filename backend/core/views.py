@@ -93,7 +93,10 @@ class OilFieldsList(APIView):
     serializer_class = OilFieldSerializer
 
     def get(self, request):
-        oil_fields = OilField.objects.filter(owner__isnull=True, is_for_sale=True)
+        if request.user.is_superuser:
+            oil_fields = OilField.objects.filter(is_for_sale=True)
+        else:
+            oil_fields = OilField.objects.filter(is_for_sale=True).exclude(owner=request.user)
         serializer = self.serializer_class(oil_fields, many=True)
         return Response(serializer.data)
 
