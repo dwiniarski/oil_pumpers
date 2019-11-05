@@ -24,7 +24,8 @@
                 <th scope="row">{{oil_field.id}}</th>
                 <td>{{oil_field.name}}</td>
                 <td>{{oil_field.selling_price | formatToCurrency}}</td>
-                <td>{{oil_field.owner}}</td>
+                <td v-if="oil_field.owner">{{oil_field.owner.email}}</td>
+                <td v-if="!oil_field.owner"></td>
                 <td>{{oil_field.amount_drills}}</td>
                 <td>{{oil_field.amount_pipes}}</td>
                 <td>{{oil_field.amount_pumps}}</td>
@@ -32,6 +33,7 @@
                 <td>{{oil_field.amount_wagons}}</td>
                 <td>{{oil_field.current_drilling_depth}}</td>
                 <td>{{oil_field.storage_tank_consumed_capacity}}</td>
+                <td>{{oil_field.storage_tank_max_capacity}}</td>
                 <td>{{oil_field.status.name}}</td>
                 <td>
                     <button class="btn btn-primary btn-sm" @click="buy(oil_field.id)">Buy</button>
