@@ -1,11 +1,12 @@
 <template>
-    <div>
-        <div v-if="!isLoggedIn" class="cover-container d-flex h-100 p-3 mx-auto flex-column" style="text-align: center">
+    <div style="width: 100%">
+        <div v-if="!isLoggedIn" class="cover-container d-flex h-100 p-3 mx-auto flex-column"
+             style="text-align: center; width:100%">
             <main-header></main-header>
             <router-view></router-view>
             <main-footer></main-footer>
         </div>
-        <div v-if="isLoggedIn">
+        <div v-if="isLoggedIn" style="width: 100%">
             <dashboard-header></dashboard-header>
             <main role="main" class="container">
                 <router-view></router-view>

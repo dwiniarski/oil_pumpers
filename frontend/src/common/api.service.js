@@ -121,3 +121,9 @@ export const OilFieldsService = {
         return axios.patch('/core/oil-fields/' + payload.id, payload)
     }
 }
+
+export const FactoriesService = {
+    fetchFactoryTypes() {
+        return axios.get('/factories/factory-types')
+    },
+}
