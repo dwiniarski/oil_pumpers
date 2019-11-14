@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core.models import User
+from core.serializers import UserSerializer
 from factories.models import FactoryType, Factory, FactoryState
 from factories.enums import FactoryStateEnum
 
@@ -12,13 +13,16 @@ class FactoryTypeSerializer(serializers.ModelSerializer):
 
 class FactoryBuildSerializer(serializers.Serializer):
     factory_type_id = serializers.IntegerField()
-    user_id = serializers.IntegerField()
+    unit_price = serializers.IntegerField()
     name = serializers.CharField()
+    start_production_when_build = serializers.BooleanField()
+    user_id = serializers.IntegerField()
 
     def validate(self, data):
-        factory_type_id = data.get('factory_type_id', None)
-        user_id = data.get('user_id', None)
+        factory_type_id = data.get('factory_type_id')
+        unit_price = data.get('unit_price')
         name = data.get('name', None)
+        user_id = data.get('user_id')
 
         try:
             user = User.objects.get(pk=user_id)
@@ -28,26 +32,35 @@ class FactoryBuildSerializer(serializers.Serializer):
         try:
             factory_type = FactoryType.objects.get(pk=factory_type_id)
         except FactoryType.DoesNotExist:
-            raise serializers.ValidationError(
-                'Oil field does not exist, is for sale or does not belong to this user.'
-            )
+            raise serializers.ValidationError("Factory type does not exist.")
 
         if user.cash_total < factory_type.build_cost:
             raise serializers.ValidationError('User does not have enough money to buy this factory.')
 
+        if unit_price <= 0:
+            raise serializers.ValidationError('Unit price cannot smaller or equal to zero.')
+
         return {
             'factory_type_id': factory_type_id,
-            'user_id': user_id,
-            'name': name
+            'name': name,
+            'unit_price': unit_price,
+            'start_production_when_build': data.get('start_production_when_build'),
+            'user_id': user_id
         }
 
     def save(self):
-        factory_type = FactoryType.objects.get(pk=self.validated_data.get('factory_type_id'))
-        factory_state = FactoryState.objects.get(pk=FactoryStateEnum.NON_OPERATIONAL.value)
         user = User.objects.get(pk=self.validated_data.get('user_id'))
-        Factory.objects.create(name=self.validated_data.get('name'), level=1, price_per_unit=0,
+        factory_type = FactoryType.objects.get(pk=self.validated_data.get('factory_type_id'))
+        if self.validated_data.get('start_production_when_build'):
+            factory_state = FactoryState.objects.get(pk=FactoryStateEnum.OPERATIONAL.value)
+        else:
+            factory_state = FactoryState.objects.get(pk=FactoryStateEnum.NON_OPERATIONAL.value)
+
+        Factory.objects.create(name=self.validated_data.get('name'), level=1,
+                               price_per_unit=self.validated_data.get('unit_price'),
                                production_rate=factory_type.base_production_rate, units_stored=0,
-                               upkeep_cost=factory_type.base_upkeep_cost, owner=user, type=factory_type,
+                               upkeep_cost=factory_type.base_upkeep_cost, owner=user,
+                               type=factory_type,
                                is_for_sale=False, state=factory_state)
         user.cash_total = user.cash_total - factory_type.build_cost
         user.save()

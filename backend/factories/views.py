@@ -13,9 +13,8 @@ class FactoryBuildAPIView(APIView):
     serializer_class = FactoryBuildSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(
-            data={'factory_type_id': request.data['factory_type_id'], 'user_id': request.user.id,
-                  'name': request.data['name']})
+        request.data['user_id'] = request.user.id
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({}, status=status.HTTP_201_CREATED)
