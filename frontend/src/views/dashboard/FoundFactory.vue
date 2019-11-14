@@ -17,17 +17,17 @@
                          aria-labelledby="list-home-list">
                         <div class="row">
                             <p>
-                                {{factory_form.selected_factory_type.description}}
+                                {{selected_factory_type.description}}
                             </p>
                         </div>
                         <div class="row">
-                            Build cost: {{factory_form.selected_factory_type.build_cost | formatToCurrency}}
+                            Build cost: {{selected_factory_type.build_cost | formatToCurrency}}
                         </div>
                         <div class="row">
-                            Upkeep cost: {{factory_form.selected_factory_type.base_upkeep_cost | formatToCurrency}}
+                            Upkeep cost: {{selected_factory_type.base_upkeep_cost | formatToCurrency}}
                         </div>
                         <div class="row">
-                            Base production on Level 1: {{factory_form.selected_factory_type.base_production_rate}}
+                            Base production on Level 1: {{selected_factory_type.base_production_rate}}
                         </div>
                     </div>
 
@@ -35,6 +35,9 @@
             </div>
         </div>
         <div class="row" style="padding-top: 20px">
+            <div class="col-12">
+                Factory name: <input type="text" v-model="factory_form.name"/>
+            </div>
             <div class="col-12">
                 Setup price per unit: <input type="text" v-model="factory_form.unit_price"/>$
             </div>
@@ -57,32 +60,37 @@
 </template>
 
 <script>
-    import {FETCH_FACTORY_TYPES} from "../../store/actions";
+    import {FETCH_FACTORY_TYPES, BUILD_FACTORY, FETCH_ACCOUNT_DATA} from "../../store/actions";
 
     export default {
         name: "FoundFactory",
         mounted() {
             this.$store.dispatch(FETCH_FACTORY_TYPES).then(response => {
                 this.factory_types = response.data;
-                this.factory_form.selected_factory_type = this.factory_types[0];
+                this.selected_factory_type = this.factory_types[0];
             });
         },
         data() {
             return {
+                selected_factory_type: '',
                 factory_form: {
-                    selected_factory_type: '',
                     unit_price: '',
-                    start_production_when_build: true
+                    start_production_when_build: true,
+                    name: ''
                 },
                 factory_types: ''
             }
         },
         methods: {
             selectFactoryType: function (factory_type) {
-                this.factory_form.selected_factory_type = factory_type;
+                this.selected_factory_type = factory_type;
             },
             build: function () {
-                alert('build clicked');
+                this.factory_form.factory_type_id = this.selected_factory_type.id;
+                this.$store.dispatch(BUILD_FACTORY,this.factory_form).then(response => {
+                    this.$store.dispatch(FETCH_ACCOUNT_DATA);
+                    alert('Factory has been build.');
+                }).catch(error => {alert(error)});
             }
         }
     }

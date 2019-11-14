@@ -126,4 +126,7 @@ export const FactoriesService = {
     fetchFactoryTypes() {
         return axios.get('/factories/factory-types')
     },
+    buildFactory(payload) {
+        return axios.post('/factories/build', payload)
+    }
 }

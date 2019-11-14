@@ -1,7 +1,8 @@
 import {} from '../mutations'
 
 import {
-    FETCH_FACTORY_TYPES
+    FETCH_FACTORY_TYPES,
+    BUILD_FACTORY
 } from '../actions'
 import {FactoriesService} from "../../common/api.service";
 
@@ -12,6 +13,9 @@ const getters = {}
 const actions = {
     [FETCH_FACTORY_TYPES](context, payload) {
         return FactoriesService.fetchFactoryTypes();
+    },
+    [BUILD_FACTORY](context, payload) {
+        return FactoriesService.buildFactory(payload);
     }
 }
 const mutations = {}

@@ -13,3 +13,4 @@ export const CHANGE_OIL_FIELD_NAME = "changeOilFieldName";
 export const CHANGE_OIL_FIELD_SELLING_PRICE = "changeOilFieldSellingPrice";
 export const CHANGE_OIL_FIELD_IS_FOR_SALE = "changeOilFieldIsForSale";
 export const FETCH_FACTORY_TYPES = "fetchFactoryTypes";
+export const BUILD_FACTORY = "buildFactory";
