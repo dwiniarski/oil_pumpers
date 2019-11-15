@@ -8,30 +8,34 @@ from core.models import OilField
 
 class OilFieldTestCase(APITestCase):
     access_token = ''
+    user = ''
+    oil_fields = ''
 
     def setUp(self):
         management.call_command('seed_test')
 
-        user = User.objects.create(pk=1, email='user@test.com', is_active=True)
-        user.set_password('12qwaszx')
-        user.save()
+        self.user = User.objects.create(pk=1, email='user@test.com', is_active=True)
+        self.user.set_password('12qwaszx')
+        self.user.save()
         url = reverse('token_obtain_pair')
         data = {'email': 'user@test.com', 'password': '12qwaszx'}
         response = self.client.post(url, data, format='json')
         self.access_token = response.data['access']
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.access_token)
 
+        self.oil_fields = list()
+
         # seed some oil fields
-        OilField.objects.create(pk=1, required_drilling_depth=4082, volume_starting=74743467,
-                                volume_left=74743467, selling_price=5134418)
-        OilField.objects.create(pk=2, required_drilling_depth=1011, volume_starting=148943672,
-                                volume_left=148943672, selling_price=19566335)
-        OilField.objects.create(pk=3, required_drilling_depth=3173, volume_starting=135934516,
-                                volume_left=135934516, selling_price=11859592)
-        OilField.objects.create(pk=4, required_drilling_depth=750, volume_starting=137077391,
-                                volume_left=137077391, selling_price=18737640)
-        OilField.objects.create(pk=5, required_drilling_depth=2887, volume_starting=833123,
-                                volume_left=833123, selling_price=77548)
+        self.oil_fields.append(OilField.objects.create(pk=1, required_drilling_depth=4082, volume_starting=74743467,
+                                                       volume_left=74743467, selling_price=5134418))
+        self.oil_fields.append(OilField.objects.create(pk=2, required_drilling_depth=1011, volume_starting=148943672,
+                                                       volume_left=148943672, selling_price=19566335))
+        self.oil_fields.append(OilField.objects.create(pk=3, required_drilling_depth=3173, volume_starting=135934516,
+                                                       volume_left=135934516, selling_price=11859592))
+        self.oil_fields.append(OilField.objects.create(pk=4, required_drilling_depth=750, volume_starting=137077391,
+                                                       volume_left=137077391, selling_price=18737640))
+        self.oil_fields.append(OilField.objects.create(pk=5, required_drilling_depth=2887, volume_starting=833123,
+                                                       volume_left=833123, selling_price=77548))
 
     def test_list_oil_fields_for_sale(self):
         url = reverse('list-oil-fields-for-sale')
@@ -64,3 +68,15 @@ class OilFieldTestCase(APITestCase):
         oil_field = OilField.objects.get(pk=oil_field_id)
         self.assertEqual(oil_field.is_for_sale, True)
         self.assertEqual(oil_field.selling_price, oil_field_selling_price)
+
+    def test_list_my_oil_fields(self):
+        self.oil_fields[1].owner = self.user
+        self.oil_fields[1].save()
+        self.oil_fields[3].owner = self.user
+        self.oil_fields[3].save()
+        self.oil_fields[4].owner = self.user
+        self.oil_fields[4].save()
+        url = reverse('account-oil-fields')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
