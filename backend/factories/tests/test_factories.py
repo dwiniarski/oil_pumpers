@@ -5,8 +5,7 @@ from core.models import User
 from django.core import management
 from factories.enums import FactoryTypeEnum, FactoryStateEnum
 from factories.models import Factory, FactoryType, FactoryState
-from factories.serializers import FactoryTypeSerializer
-import json
+from factories.models import Factory
 
 
 class FactoriesTestCase(APITestCase):
@@ -65,3 +64,15 @@ class FactoriesTestCase(APITestCase):
 
     def test_upgrade_factory(self):
         pass
+
+    def test_list_user_factories(self):
+        Factory.objects.create(type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1, owner=self.user,
+                               state_id=FactoryStateEnum.OPERATIONAL.value)
+        Factory.objects.create(type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1, owner=self.user,
+                               state_id=FactoryStateEnum.OPERATIONAL.value)
+        Factory.objects.create(type_id=FactoryTypeEnum.PIPE_FACTORY.value, level=1, owner=self.user,
+                               state_id=FactoryStateEnum.OPERATIONAL.value)
+        url = reverse('account-factories')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
