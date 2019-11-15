@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from core.models import OilField, OilFieldStatus
+from core.models import OilField, OilFieldStatus, User
 from factories.models import FactoryType, FactoryState
 from core import config
 from core.enums import OilFieldStatusEnum
@@ -66,6 +66,11 @@ class SeedCommand(BaseCommand):
         FactoryState.objects.create(pk=FactoryStateEnum.OPERATIONAL.value,
                                     name=FactoryStateEnum.OPERATIONAL.name, human_name='Operational')
 
+    def create_users(self):
+        user = User.objects.create(email='testuser@test.com', is_active=True)
+        user.set_password('12qwaszx')
+        user.save()
+
     def handle(self, *args, **options):
         pass
 
@@ -76,3 +81,4 @@ class Command(SeedCommand):
         self.generate_oil_fields()
         self.populate_factory_types()
         self.populate_factory_states()
+        self.create_users()
