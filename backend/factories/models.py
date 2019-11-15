@@ -4,6 +4,8 @@ from django.conf import settings
 
 class FactoryType(models.Model):
     name = models.CharField(max_length=100)
+    human_name = models.CharField(max_length=100)
+    description = models.TextField()
     base_production_rate = models.IntegerField(default=0)
     build_cost = models.IntegerField(default=0)
     base_upkeep_cost = models.IntegerField(default=0)
@@ -13,8 +15,8 @@ class FactoryType(models.Model):
 
 
 class FactoryState(models.Model):
-    short_name = models.CharField(max_length=100)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=100)
+    human_name = models.CharField(max_length=255)
 
     class Meta:
         db_table = "factories_factory_states"

@@ -32,6 +32,9 @@
                         </div>
                     </li>
                     <li class="nav-item active">
+                        <router-link :to="{name:'dashboard-found-factory-view'}" class="nav-link">Found a factory</router-link>
+                    </li>
+                    <li class="nav-item active">
                         <router-link :to="{name:'dashboard-rank-view'}" class="nav-link">Ranks</router-link>
                     </li>
                     <li class="nav-item active">

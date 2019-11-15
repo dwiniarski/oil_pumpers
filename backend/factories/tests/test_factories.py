@@ -5,6 +5,8 @@ from core.models import User
 from django.core import management
 from factories.enums import FactoryTypeEnum, FactoryStateEnum
 from factories.models import Factory, FactoryType, FactoryState
+from factories.serializers import FactoryTypeSerializer
+import json
 
 
 class FactoriesTestCase(APITestCase):
@@ -26,7 +28,9 @@ class FactoriesTestCase(APITestCase):
     def test_found_factory(self):
         # Let's build a pump factory
         url = reverse('build-factory')
-        data = {'factory_type_id': FactoryTypeEnum.PUMP_FACTORY.value, 'name': 'The Great Pump Factory'}
+        data = {'factory_type_id': FactoryTypeEnum.PUMP_FACTORY.value, 'unit_price': 45,
+                'start_production_when_build': True,
+                'name': 'The Great Oil Pump factory'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(pk=1)
@@ -37,7 +41,7 @@ class FactoriesTestCase(APITestCase):
             self.fail()
         self.assertEqual(factory.level, 1)
         self.assertEqual(factory.is_for_sale, False)
-        self.assertEqual(factory.state.id, FactoryStateEnum.NON_OPERATIONAL.value)
+        self.assertEqual(factory.state.id, FactoryStateEnum.OPERATIONAL.value)
         self.assertEqual(factory.is_selling, False)
 
     def test_toggle_operational_factory(self):
