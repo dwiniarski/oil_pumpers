@@ -11,6 +11,21 @@ class FactoryTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FactoryStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FactoryState
+        fields = '__all__'
+
+
+class FactorySerializer(serializers.ModelSerializer):
+    state = FactoryStateSerializer()
+    type = FactoryTypeSerializer()
+
+    class Meta:
+        model = Factory
+        fields = '__all__'
+
+
 class FactoryBuildSerializer(serializers.Serializer):
     factory_type_id = serializers.IntegerField()
     unit_price = serializers.IntegerField()

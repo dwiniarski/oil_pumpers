@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer
-from factories.models import FactoryType
-from factories.serializers import FactoryTypeSerializer
+from factories.models import FactoryType, Factory
+from factories.serializers import FactoryTypeSerializer, FactorySerializer
 
 
 class FactoryBuildAPIView(APIView):
@@ -37,3 +37,13 @@ class FactoryToggleOperationalAPIView(APIView):
 class FactoryTypeList(generics.ListAPIView):
     queryset = FactoryType.objects.all()
     serializer_class = FactoryTypeSerializer
+
+
+class UserFactoriesList(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FactorySerializer
+
+    def list(self, request, *args, **kwargs):
+        factories = Factory.objects.filter(owner=request.user)
+        serializer = self.serializer_class(factories, many=True)
+        return Response(serializer.data)
