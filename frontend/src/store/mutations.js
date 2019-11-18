@@ -8,3 +8,4 @@ export const SET_ACCOUNT_DATA = "setAccountData";
 
 export const SET_OIL_FIELDS_FOR_SALE = "setOilFieldsForSale";
 export const SET_MY_OIL_FIELDS = "setMyOilFields";
+export const SET_MY_FACTORIES = "setMyFactories";

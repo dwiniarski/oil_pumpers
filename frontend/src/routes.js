@@ -75,6 +75,14 @@ let routes = [
         component: require('./views/dashboard/ManageOilField').default
     },
     {
+        path: '/dashboard/factories/:id/manage',
+        name: 'dashboard-factories-manage-view',
+        meta: {
+            requiresAuth: true
+        },
+        component: require('./views/dashboard/ManageFactory').default
+    },
+    {
         path: '/dashboard/factories/found',
         name: 'dashboard-found-factory-view',
         meta: {
