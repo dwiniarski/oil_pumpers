@@ -16,3 +16,4 @@ export const FETCH_FACTORY_TYPES = "fetchFactoryTypes";
 export const BUILD_FACTORY = "buildFactory";
 export const FETCH_MY_FACTORIES = "fetchMyFactories";
 export const FETCH_FACTORY = "fetchFactory";
+export const UPGRADE_FACTORY = "upgradeFactory";

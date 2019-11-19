@@ -1,12 +1,13 @@
 import {
-    SET_MY_FACTORIES, SET_OIL_FIELDS_FOR_SALE
+    SET_MY_FACTORIES
 } from '../mutations'
 
 import {
     FETCH_FACTORY_TYPES,
     BUILD_FACTORY,
     FETCH_MY_FACTORIES,
-    FETCH_FACTORY
+    FETCH_FACTORY,
+    UPGRADE_FACTORY
 } from '../actions'
 import {FactoriesService} from "../../common/api.service";
 
@@ -35,6 +36,9 @@ const actions = {
     },
     [FETCH_FACTORY](context, payload) {
         return FactoriesService.fetchFactory(payload.id);
+    },
+    [UPGRADE_FACTORY](context, payload) {
+        return FactoriesService.upgradeFactory(payload.id);
     }
 }
 const mutations = {

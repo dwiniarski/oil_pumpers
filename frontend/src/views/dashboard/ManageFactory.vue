@@ -54,7 +54,7 @@
 </template>
 
 <script>
-    import {FETCH_FACTORY} from "../../store/actions";
+    import {FETCH_ACCOUNT_DATA, FETCH_FACTORY, UPGRADE_FACTORY} from "../../store/actions";
 
     export default {
         name: "ManageFactory",
@@ -64,15 +64,24 @@
             }
         },
         mounted() {
-            this.$store.dispatch(FETCH_FACTORY, {'id': this.$route.params.id}).then(
-                response => {
-                    this.factory = response.data;
-                }
-            );
+            this.fetchFactory();
         },
         methods: {
             upgradeLevel: function () {
-                alert("Updating level");
+                this.$store.dispatch(UPGRADE_FACTORY, {'id': this.factory.id}).then(response => {
+                        this.fetchFactory();
+                        this.$store.dispatch(FETCH_ACCOUNT_DATA);
+                    }
+                ).catch(error => {
+                    alert(error)
+                })
+            },
+            fetchFactory: function () {
+                this.$store.dispatch(FETCH_FACTORY, {'id': this.$route.params.id}).then(
+                    response => {
+                        this.factory = response.data;
+                    }
+                );
             }
         }
     }
