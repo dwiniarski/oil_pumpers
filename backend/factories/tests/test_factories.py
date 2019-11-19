@@ -5,7 +5,7 @@ from core.models import User
 from django.core import management
 from factories.enums import FactoryTypeEnum, FactoryStateEnum
 from factories.models import Factory, FactoryType, FactoryState
-from factories.models import Factory
+from core import config
 
 
 class FactoriesTestCase(APITestCase):
@@ -63,7 +63,18 @@ class FactoriesTestCase(APITestCase):
         self.assertEqual(factory.state, factory_state_non_operational)
 
     def test_upgrade_factory(self):
-        pass
+        factory_before_upgrade = Factory.objects.create(pk=1, type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1,
+                                                        owner=self.user,
+                                                        state_id=FactoryStateEnum.OPERATIONAL.value)
+        url = reverse('factory-upgrade', kwargs={'pk': 1})
+        response = self.client.post(url, format='json')
+        factory = Factory.objects.get(pk=1)
+        user = User.objects.get(pk=self.user.id)
+        self.assertEqual(response.status, status.HTTP_200_OK)
+        self.assertEqual(factory.level, 2)
+        self.assertEqual(factory.production_rate, factory_before_upgrade.production_rate * 2)
+        self.assertEqual(factory.upkeep_cost, factory_before_upgrade.upkeep_cost * 1.5)
+        self.assertEqual(user.cash_total, config.STARTING_CASH - factory.type.build_cost)
 
     def test_list_user_factories(self):
         Factory.objects.create(type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1, owner=self.user,
