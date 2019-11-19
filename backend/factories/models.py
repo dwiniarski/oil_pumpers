@@ -9,6 +9,8 @@ class FactoryType(models.Model):
     base_production_rate = models.IntegerField(default=0)
     build_cost = models.IntegerField(default=0)
     base_upkeep_cost = models.IntegerField(default=0)
+    level_upkeep_factor = models.DecimalField(decimal_places=1, max_digits=4)
+    level_production_factor = models.DecimalField(decimal_places=1, max_digits=4)
 
     class Meta:
         db_table = "factories_factory_types"

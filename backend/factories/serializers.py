@@ -3,6 +3,7 @@ from core.models import User
 from core.serializers import UserSerializer
 from factories.models import FactoryType, Factory, FactoryState
 from factories.enums import FactoryStateEnum
+from django.db import transaction
 
 
 class FactoryTypeSerializer(serializers.ModelSerializer):
@@ -78,6 +79,48 @@ class FactoryBuildSerializer(serializers.Serializer):
                                type=factory_type,
                                is_for_sale=False, state=factory_state)
         user.cash_total = user.cash_total - factory_type.build_cost
+        user.save()
+
+
+class FactoryUpgradeSerializer(serializers.Serializer):
+    factory_id = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+
+    def validate(self, data):
+        factory_id = data.get('factory_id')
+        user_id = data.get('user_id')
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User does not exist')
+
+        try:
+            if user.is_superuser:
+                factory = Factory.objects.get(pk=factory_id)
+            else:
+                factory = Factory.objects.get(pk=factory_id, owner=user)
+        except Factory.DoesNotExist:
+            raise serializers.ValidationError("Factory type does not exist.")
+
+        if user.cash_total < factory.type.build_cost:
+            raise serializers.ValidationError('User does not have enough money to upgrade this factory.')
+
+        return {
+            'factory_id': factory_id,
+            'user_id': user_id
+        }
+
+    @transaction.atomic
+    def save(self):
+        user = User.objects.get(pk=self.validated_data.get('user_id'))
+        factory = Factory.objects.get(pk=self.validated_data.get('factory_id'))
+        factory.level = factory.level + 1
+        factory.production_rate = factory.production_rate * factory.type.level_production_factor
+        factory.upkeep_cost = int(round(factory.upkeep_cost * factory.type.level_upkeep_factor))
+        factory.save()
+
+        user.cash_total = user.cash_total - factory.type.build_cost
         user.save()
 
 

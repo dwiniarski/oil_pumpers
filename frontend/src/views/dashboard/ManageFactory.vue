@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-2">Level</div>
             <div class="col-sm">{{factory.level}}
-                <button class="btn btn-sm btn-primary" @click="updateLevel">Update</button>
+                <button class="btn btn-sm btn-primary" @click="upgradeLevel">Upgrade</button>
             </div>
         </div>
         <div class="row">
@@ -71,7 +71,7 @@
             );
         },
         methods: {
-            updateLevel: function () {
+            upgradeLevel: function () {
                 alert("Updating level");
             }
         }

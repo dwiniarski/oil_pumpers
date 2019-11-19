@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer
+from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer, FactoryUpgradeSerializer
 from factories.models import FactoryType, Factory
 from factories.serializers import FactoryTypeSerializer, FactorySerializer
 from rest_framework.exceptions import NotFound
@@ -70,3 +70,17 @@ class FactoryDetail(FactoryAPIView):
         factory = self.get_object(request, pk)
         serializer = self.serializer_class(factory)
         return Response(serializer.data)
+
+
+class FactoryUpgradeAPIView(FactoryAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FactoryUpgradeSerializer
+
+    def post(self, request, pk):
+        request.data['user_id'] = request.user.id
+        request.data['factory_id'] = pk
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
