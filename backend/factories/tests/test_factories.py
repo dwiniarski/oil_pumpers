@@ -76,3 +76,17 @@ class FactoriesTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
+
+    def test_get_existing_user_factory(self):
+        Factory.objects.create(pk=1, type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1, owner=self.user,
+                               state_id=FactoryStateEnum.OPERATIONAL.value)
+        url = reverse('factory-detail', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_non_existing_factory(self):
+        Factory.objects.create(pk=1, type_id=FactoryTypeEnum.DRILL_FACTORY.value, level=1, owner=self.user,
+                               state_id=FactoryStateEnum.OPERATIONAL.value)
+        url = reverse('factory-detail', kwargs={'pk': 10})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -5,7 +5,8 @@ import {
 import {
     FETCH_FACTORY_TYPES,
     BUILD_FACTORY,
-    FETCH_MY_FACTORIES
+    FETCH_MY_FACTORIES,
+    FETCH_FACTORY
 } from '../actions'
 import {FactoriesService} from "../../common/api.service";
 
@@ -31,6 +32,9 @@ const actions = {
                 context.commit(SET_MY_FACTORIES, response.data);
             });
         ;
+    },
+    [FETCH_FACTORY](context, payload) {
+        return FactoriesService.fetchFactory(payload.id);
     }
 }
 const mutations = {

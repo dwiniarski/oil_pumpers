@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer
 from factories.models import FactoryType, Factory
 from factories.serializers import FactoryTypeSerializer, FactorySerializer
+from rest_framework.exceptions import NotFound
 
 
 class FactoryBuildAPIView(APIView):
@@ -46,4 +47,26 @@ class UserFactoriesList(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         factories = Factory.objects.filter(owner=request.user)
         serializer = self.serializer_class(factories, many=True)
+        return Response(serializer.data)
+
+
+class FactoryAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FactorySerializer
+
+    def get_object(self, request, pk):
+        try:
+            if request.user.is_superuser:
+                return Factory.objects.get(pk=pk)
+            else:
+                return Factory.objects.get(pk=pk, owner=request.user)
+        except Factory.DoesNotExist:
+            raise NotFound
+
+
+class FactoryDetail(FactoryAPIView):
+
+    def get(self, request, pk):
+        factory = self.get_object(request, pk)
+        serializer = self.serializer_class(factory)
         return Response(serializer.data)

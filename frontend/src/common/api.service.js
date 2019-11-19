@@ -130,6 +130,9 @@ export const FactoriesService = {
         return axios.post('/factories/build', payload)
     },
     fetchMyFactories() {
-        return axios.get('/factories/account/factories');
+        return axios.get('/factories/account/factories')
+    },
+    fetchFactory(id) {
+        return axios.get('/factories/' + id)
     }
 }
