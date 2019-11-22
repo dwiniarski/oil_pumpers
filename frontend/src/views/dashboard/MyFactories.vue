@@ -24,7 +24,7 @@
                 <td>{{factory.production_rate}}</td>
                 <td>{{factory.is_selling}}</td>
                 <td>{{factory.units_stored}}</td>
-                <td>{{factory.upkeep_cost}}</td>
+                <td>{{factory.upkeep_cost | formatToCurrency}}</td>
                 <td>
                     <router-link class="btn btn-primary btn-sm" href="#"
                                  :to="{name:'dashboard-factories-manage-view', params:{id:factory.id}}">Manage
