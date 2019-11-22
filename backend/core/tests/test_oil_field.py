@@ -4,11 +4,13 @@ from rest_framework import status
 from core.models import User
 from django.core import management
 from core.models import OilField
+from core.enums import OilFieldStatusEnum
 
 
 class OilFieldTestCase(APITestCase):
     access_token = ''
     user = ''
+    another_user = ''
     oil_fields = ''
 
     def setUp(self):
@@ -17,6 +19,12 @@ class OilFieldTestCase(APITestCase):
         self.user = User.objects.create(pk=1, email='user@test.com', is_active=True)
         self.user.set_password('12qwaszx')
         self.user.save()
+
+        # creating another user
+        self.another_user = User.objects.create(pk=2, email='another@test.com', is_active=True)
+        self.another_user.set_password('12qwaszx')
+        self.another_user.save()
+
         url = reverse('token_obtain_pair')
         data = {'email': 'user@test.com', 'password': '12qwaszx'}
         response = self.client.post(url, data, format='json')
@@ -80,3 +88,56 @@ class OilFieldTestCase(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
+
+    def test_start_drilling_without_drills(self):
+        oil_field_id = 4
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        oil_field.owner = self.user
+        oil_field.save()
+        url = reverse('start-drilling', kwargs={'pk': oil_field_id})
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['non_field_errors'][0], 'You have no drills to start drilling.')
+
+    def test_start_drilling_with_drills(self):
+        oil_field_id = 4
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        oil_field.owner = self.user
+        oil_field.amount_drills = 50
+        oil_field.save()
+        url = reverse('start-drilling', kwargs={'pk': oil_field_id})
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        self.assertEqual(oil_field.status_id, OilFieldStatusEnum.DRILLING.value)
+
+    def test_start_drilling_another_users_oil_field(self):
+        oil_field_id = 4
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        oil_field.owner = self.another_user
+        oil_field.save()
+        url = reverse('start-drilling', kwargs={'pk': oil_field_id})
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_stop_drilling(self):
+        oil_field_id = 4
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        oil_field.owner = self.user
+        oil_field.status_id = OilFieldStatusEnum.DRILLING.value
+        oil_field.save()
+        url = reverse('stop-drilling', kwargs={'pk': oil_field_id})
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        self.assertEqual(oil_field.status_id, OilFieldStatusEnum.IDLE.value)
+
+    def test_stop_drilling_another_users_oil_field(self):
+        oil_field_id = 4
+        oil_field = OilField.objects.get(pk=oil_field_id)
+        oil_field.owner = self.another_user
+        oil_field.status_id = OilFieldStatusEnum.DRILLING.value
+        oil_field.save()
+        url = reverse('stop-drilling', kwargs={'pk': oil_field_id})
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
