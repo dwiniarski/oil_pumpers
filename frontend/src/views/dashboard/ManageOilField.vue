@@ -89,6 +89,20 @@
                 </table>
             </div>
         </div>
+        <div class="row" style="padding-top: 15px; padding-bottom: 15px">
+            <div class="col-2" v-if="(oil_field.status.name == 'IDLE') && (oil_field.amount_drills > 0)">
+                <button class="btn btn-success">Start drilling</button>
+            </div>
+            <div class="col-2" v-if="oil_field.status.name == 'DRILLING'">
+                <button class="btn btn-danger">Stop drilling</button>
+            </div>
+            <div class="col-2" v-if="oil_field.status.name == 'FLOWING'">
+                <button class="btn btn-success">Start pumping</button>
+            </div>
+            <div class="col-2" v-if="oil_field.status.name == 'PUMPING'">
+                <button class="btn btn-danger">Stop pumping</button>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm">
                 <table class="table table-striped table-dark table-bordered" style="width:100%">
