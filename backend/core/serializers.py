@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from core.models import User, OilField, OilFieldStatus
 from core.mail import send_activation_email
+from core.enums import OilFieldStatusEnum
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -96,6 +97,77 @@ class OilFieldBuySerializer(serializers.Serializer):
         user.save()
         oil_field.is_for_sale = False
         oil_field.owner = user
+        oil_field.save()
+
+
+class OilFieldStartDrillingSerializer(serializers.Serializer):
+    oil_field_id = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+
+    def validate(self, data):
+        oil_field_id = data.get('oil_field_id', None)
+        user_id = data.get('user_id', None)
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User does not exist')
+
+        oil_field = OilField.objects.filter(pk=oil_field_id).first()
+        if not oil_field:
+            raise serializers.ValidationError('Oil field does not exist.')
+
+        if oil_field.owner != user:
+            raise serializers.ValidationError('This oil field does not belong to you.')
+
+        if oil_field.status_id != OilFieldStatusEnum.IDLE.value:
+            raise serializers.ValidationError('The oil field state must be idle before starting drilling.')
+
+        if not oil_field.amount_drills > 0:
+            raise serializers.ValidationError('You have no drills to start drilling.')
+
+        return {
+            'oil_field_id': oil_field_id,
+            'user_id': user_id
+        }
+
+    def save(self):
+        oil_field = OilField.objects.get(pk=self.validated_data.get('oil_field_id'))
+        oil_field.status_id = OilFieldStatusEnum.DRILLING.value
+        oil_field.save()
+
+
+class OilFieldStopDrillingSerializer(serializers.Serializer):
+    oil_field_id = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+
+    def validate(self, data):
+        oil_field_id = data.get('oil_field_id', None)
+        user_id = data.get('user_id', None)
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User does not exist')
+
+        oil_field = OilField.objects.filter(pk=oil_field_id).first()
+        if not oil_field:
+            raise serializers.ValidationError('Oil field does not exist.')
+
+        if oil_field.owner != user:
+            raise serializers.ValidationError('This oil field does not belong to you.')
+
+        if oil_field.status_id != OilFieldStatusEnum.DRILLING.value:
+            raise serializers.ValidationError('The oil field must be drilling if you want to stop drilling.')
+
+        return {
+            'oil_field_id': oil_field_id,
+            'user_id': user_id
+        }
+
+    def save(self):
+        oil_field = OilField.objects.get(pk=self.validated_data.get('oil_field_id'))
+        oil_field.status_id = OilFieldStatusEnum.IDLE.value
         oil_field.save()
 
 

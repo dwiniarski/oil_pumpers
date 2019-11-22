@@ -118,7 +118,7 @@ class OilFieldTestCase(APITestCase):
         oil_field.save()
         url = reverse('start-drilling', kwargs={'pk': oil_field_id})
         response = self.client.post(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_stop_drilling(self):
         oil_field_id = 4
@@ -140,4 +140,4 @@ class OilFieldTestCase(APITestCase):
         oil_field.save()
         url = reverse('stop-drilling', kwargs={'pk': oil_field_id})
         response = self.client.post(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

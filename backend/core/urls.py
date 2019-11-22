@@ -1,6 +1,6 @@
 from django.urls import path
 from core.views import UserRegistration, UserActivation, OilFieldsList, OilFieldBuyAPIView, AccountData, \
-    UserOilFieldsList, OilFieldDetail
+    UserOilFieldsList, OilFieldDetail, OilFieldStartDrillingAPIView, OilFieldStopDrillingAPIView
 
 urlpatterns = [
     path('register', UserRegistration.as_view(), name='register'),
@@ -10,4 +10,6 @@ urlpatterns = [
     path('oil-fields/for-sale', OilFieldsList.as_view(), name='list-oil-fields-for-sale'),
     path('oil-fields/<int:pk>', OilFieldDetail.as_view(), name='oil-field-detail'),
     path('oil-fields/<int:pk>/buy', OilFieldBuyAPIView.as_view(), name='buy-oil-field'),
+    path('oil-fields/<int:pk>/start-drilling', OilFieldStartDrillingAPIView.as_view(), name='start-drilling'),
+    path('oil-fields/<int:pk>/stop-drilling', OilFieldStopDrillingAPIView.as_view(), name='stop-drilling'),
 ]

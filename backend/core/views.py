@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework import status
 from core.serializers import RegistrationSerializer, ActivationSerializer, OilFieldBuySerializer, OilFieldSerializer, \
-    OilFieldSetForSaleSerializer, UserSerializer
+    OilFieldSetForSaleSerializer, UserSerializer, OilFieldStopDrillingSerializer, OilFieldStartDrillingSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from core.models import OilField, User
 from django.shortcuts import render
@@ -101,9 +101,8 @@ class OilFieldsList(APIView):
         return Response(serializer.data)
 
 
-class OilFieldBuyAPIView(APIView):
+class OilFieldActionAPIView(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = OilFieldBuySerializer
 
     def post(self, request, pk):
         serializer = self.serializer_class(data={'oil_field_id': pk, 'user_id': request.user.id})
@@ -111,3 +110,15 @@ class OilFieldBuyAPIView(APIView):
             serializer.save()
             return Response({}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OilFieldBuyAPIView(OilFieldActionAPIView):
+    serializer_class = OilFieldBuySerializer
+
+
+class OilFieldStartDrillingAPIView(OilFieldActionAPIView):
+    serializer_class = OilFieldStartDrillingSerializer
+
+
+class OilFieldStopDrillingAPIView(OilFieldActionAPIView):
+    serializer_class = OilFieldStopDrillingSerializer
