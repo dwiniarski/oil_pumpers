@@ -103,3 +103,12 @@ class FactoriesTestCase(APITestCase):
         url = reverse('factory-detail', kwargs={'pk': 10})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_product_suppliers_list(self):
+        url = reverse('product-suppliers', kwargs={'product_type': 'drills'})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_product_suppliers_list_with_uknown_product(self):
+        response = self.client.get('/api/factories/products/cars/suppliers', format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
