@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer, FactoryUpgradeSerializer
+from factories.serializers import FactoryBuildSerializer, FactoryToggleOperationalSerializer, FactoryUpgradeSerializer, \
+    FactoryAsSupplierSerializer
 from factories.models import FactoryType, Factory
 from factories.serializers import FactoryTypeSerializer, FactorySerializer
 from rest_framework.exceptions import NotFound
@@ -87,4 +88,11 @@ class FactoryUpgradeAPIView(FactoryAPIView):
 
 
 class ProductSuppliers(APIView):
-    pass
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FactoryAsSupplierSerializer
+
+    def get(self, request, product_type):
+        factories = Factory.objects.filter(type_id=product_type, is_selling=True, units_stored__gt=0).order_by(
+            '-price_per_unit')
+        serializer = self.serializer_class(factories, many=True)
+        return Response(serializer.data)

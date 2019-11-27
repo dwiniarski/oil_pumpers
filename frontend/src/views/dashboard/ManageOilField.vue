@@ -20,14 +20,14 @@
                         <td>Pipes amount</td>
                         <td>{{oil_field.amount_pipes}}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Buy</button>
+                            <button class="btn btn-primary btn-sm" @click="showSuppliersList('pipes')">Buy</button>
                         </td>
                     </tr>
                     <tr>
                         <td>Pumps amount</td>
                         <td>{{oil_field.amount_pumps}}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Buy</button>
+                            <button class="btn btn-primary btn-sm" @click="showSuppliersList('pumps')">Buy</button>
                         </td>
                     </tr>
 
@@ -35,7 +35,7 @@
                         <td>Wagons amount</td>
                         <td>{{oil_field.amount_wagons}}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Buy</button>
+                            <button class="btn btn-primary btn-sm" @click="showSuppliersList('wagons')">Buy</button>
                         </td>
                     </tr>
                     </tbody>
@@ -51,7 +51,7 @@
                         <td>Drills amount</td>
                         <td>{{oil_field.amount_drills}}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Buy</button>
+                            <button class="btn btn-primary btn-sm" @click="showSuppliersList('drills')">Buy</button>
                         </td>
                     </tr>
                     <tr>
@@ -151,6 +151,71 @@
                 </table>
             </div>
         </div>
+
+        <div class="modal fade" id="buyModal" tabindex="-1" role="dialog" aria-labelledby="buyModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content dark-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <table class="table table-hover table-dark">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Units in store</th>
+                                    <th scope="col">Price per unit</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="factory in product_suppliers_list">
+                                    <td style="min-width: 200px">{{factory.name}}</td>
+                                    <td>{{factory.units_stored}}</td>
+                                    <td>{{factory.price_per_unit | formatToCurrency}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary"
+                                                @click="specifyAmount(factory.id)">Buy
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="specifyAmountModal" tabindex="-1" role="dialog"
+             aria-labelledby="specifyAmountModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content dark-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Buy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </template>
@@ -160,8 +225,12 @@
         FETCH_OIL_FIELD,
         CHANGE_OIL_FIELD_NAME,
         CHANGE_OIL_FIELD_SELLING_PRICE,
-        CHANGE_OIL_FIELD_IS_FOR_SALE
+        CHANGE_OIL_FIELD_IS_FOR_SALE, FETCH_PRODUCT_SUPPLIERS_LIST
     } from "../../store/actions";
+
+    import JQuery from 'jquery'
+
+    let $ = JQuery
 
     export default {
         name: "ManageOilField",
@@ -170,7 +239,11 @@
                 oil_field: {'status': {'name': ''}, 'selling_price': ''},
                 is_name_being_edited: false,
                 is_price_being_edited: false,
-                is_for_sale_being_edited: false
+                is_for_sale_being_edited: false,
+                product_suppliers_list: {},
+                buy_list: {},
+                spinner_min: 1,
+                spinner_max:
             }
         },
         mounted() {
@@ -228,11 +301,27 @@
                 ).catch(({response}) => {
                     alert(response.data.is_for_sale);
                 });
+            },
+            showSuppliersList: function (type) {
+                this.$store.dispatch(FETCH_PRODUCT_SUPPLIERS_LIST, {'product_type': type}).then(
+                    response => {
+                        this.product_suppliers_list = response.data;
+                        $('#buyModal').modal('show');
+                    }
+                ).catch(error => {
+                    alert(error.data);
+                });
+            },
+            specifyAmount: function (factory_id) {
+                $('#specifyAmountModal').modal('show');
             }
         }
     }
 </script>
 
 <style scoped>
+    .dark-modal {
+        color: #333333;
+    }
 
 </style>

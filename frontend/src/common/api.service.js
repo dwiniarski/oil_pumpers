@@ -137,5 +137,8 @@ export const FactoriesService = {
     },
     upgradeFactory(id) {
         return axios.post('/factories/' + id + '/upgrade')
+    },
+    fetchProductSuppliersList(product) {
+        return axios.get('/factories/products/' + product + '/suppliers')
     }
 }
