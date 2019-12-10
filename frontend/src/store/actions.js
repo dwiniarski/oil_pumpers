@@ -18,3 +18,4 @@ export const FETCH_MY_FACTORIES = "fetchMyFactories";
 export const FETCH_FACTORY = "fetchFactory";
 export const UPGRADE_FACTORY = "upgradeFactory";
 export const FETCH_PRODUCT_SUPPLIERS_LIST = "fetchProductSuppliersList";
+export const BUY_PRODUCTS_FROM_SUPPLIERS = "buyProductsFromSuppliers";

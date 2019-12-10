@@ -180,37 +180,33 @@
                                     <td>{{factory.price_per_unit | formatToCurrency}}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary"
-                                                @click="specifyAmount(factory.id)">Buy
+                                                @click="specifyAmount(factory.id, factory.price_per_unit, factory.units_stored, factory.name)">
+                                            Select
                                         </button>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <div class="row" v-if="specify_amount_box_visible">
+                            <div class="col-12">
+                                <form>
+                                    <div class="form-control">
+                                        <label>Enter amount:</label>
+                                        <input type="number" v-model.number="buy_list.order[0].amount"
+                                               :min="spinner_min"
+                                               :max="spinner_max"/>
+                                        <span>Total:</span> {{totalSupplierOrder | formatToCurrency}}
+                                        <button type="button" class="btn btn-success" @click="buyFromSupplier">Buy
+                                        </button>
+                                        from {{factory_name}}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="specifyAmountModal" tabindex="-1" role="dialog"
-             aria-labelledby="specifyAmountModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content dark-modal">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Modal title</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary">Buy</button>
                     </div>
                 </div>
             </div>
@@ -225,7 +221,7 @@
         FETCH_OIL_FIELD,
         CHANGE_OIL_FIELD_NAME,
         CHANGE_OIL_FIELD_SELLING_PRICE,
-        CHANGE_OIL_FIELD_IS_FOR_SALE, FETCH_PRODUCT_SUPPLIERS_LIST
+        CHANGE_OIL_FIELD_IS_FOR_SALE, FETCH_PRODUCT_SUPPLIERS_LIST, BUY_PRODUCTS_FROM_SUPPLIERS
     } from "../../store/actions";
 
     import JQuery from 'jquery'
@@ -241,15 +237,25 @@
                 is_price_being_edited: false,
                 is_for_sale_being_edited: false,
                 product_suppliers_list: {},
-                buy_list: {},
+                buy_list: {
+                    oil_field_id: 0,
+                    order: [{
+                        factory_id: 0,
+                        amount: 0,
+                        price: 0
+                    }]
+                },
                 spinner_min: 1,
-                spinner_max:
+                spinner_max: 1,
+                specify_amount_box_visible: false,
+                factory_name: ''
             }
         },
         mounted() {
             this.$store.dispatch(FETCH_OIL_FIELD, {'id': this.$route.params.id}).then(
                 response => {
                     this.oil_field = response.data;
+                    this.buy_list.oil_field_id = this.oil_field.id;
                 }
             );
         },
@@ -262,6 +268,9 @@
             },
             isForSaleEditable: function () {
                 return this.is_for_sale_being_edited;
+            },
+            totalSupplierOrder: function () {
+                return this.buy_list.order[0].amount * this.buy_list.order[0].price;
             }
         },
         methods: {
@@ -303,6 +312,7 @@
                 });
             },
             showSuppliersList: function (type) {
+                this.specify_amount_box_visible = false;
                 this.$store.dispatch(FETCH_PRODUCT_SUPPLIERS_LIST, {'product_type': type}).then(
                     response => {
                         this.product_suppliers_list = response.data;
@@ -312,8 +322,22 @@
                     alert(error.data);
                 });
             },
-            specifyAmount: function (factory_id) {
-                $('#specifyAmountModal').modal('show');
+            specifyAmount: function (factory_id, price, max_amount, name) {
+                this.buy_list.order[0].factory_id = factory_id;
+                this.buy_list.order[0].amount = 1;
+                this.buy_list.order[0].price = price;
+                this.spinner_max = max_amount;
+                this.factory_name = name;
+                this.specify_amount_box_visible = true;
+            },
+            buyFromSupplier: function () {
+                this.$store.dispatch(BUY_PRODUCTS_FROM_SUPPLIERS, this.buy_list).then(
+                    response => {
+                        console.log('bought')
+                    }
+                ).catch(error => {
+                    alert(error.data)
+                })
             }
         }
     }

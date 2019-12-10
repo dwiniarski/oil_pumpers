@@ -1,6 +1,6 @@
 <template>
     <main role="main" class="inner cover">
-        <h1 class="cover-heading">Oil Pumpers</h1>
+        <h1 class="cover-heading">LOGO</h1>
         <p class="lead">Game where you can build oil empire and become rich or bankrupt. Based on C64 game "Oil
             Pumpers" or "Pompiarze".</p>
         <form class="form-signin">

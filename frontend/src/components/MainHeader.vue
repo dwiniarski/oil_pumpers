@@ -2,7 +2,7 @@
     <header class="masthead mb-auto">
         <div class="inner">
             <h3 class="masthead-brand">
-                <router-link :to="{name:'home-view'}">Oil Pumpers</router-link>
+                <router-link :to="{name:'home-view'}">Another Logo</router-link>
             </h3>
             <nav class="nav nav-masthead justify-content-center">
                 <router-link :to="{name:'home-view'}" class="nav-link">Log In

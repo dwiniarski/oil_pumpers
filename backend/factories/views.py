@@ -96,3 +96,10 @@ class ProductSuppliers(APIView):
             '-price_per_unit')
         serializer = self.serializer_class(factories, many=True)
         return Response(serializer.data)
+
+
+class ProductBuy(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        pass

@@ -140,5 +140,8 @@ export const FactoriesService = {
     },
     fetchProductSuppliersList(product) {
         return axios.get('/factories/products/' + product + '/suppliers')
+    },
+    buyProductsFromSuppliers(payload) {
+        return axios.post('/factories/products/buy', payload)
     }
 }

@@ -8,7 +8,8 @@ import {
     FETCH_MY_FACTORIES,
     FETCH_FACTORY,
     UPGRADE_FACTORY,
-    FETCH_PRODUCT_SUPPLIERS_LIST
+    FETCH_PRODUCT_SUPPLIERS_LIST,
+    BUY_PRODUCTS_FROM_SUPPLIERS
 } from '../actions'
 import {FactoriesService} from "../../common/api.service";
 
@@ -43,6 +44,9 @@ const actions = {
     },
     [FETCH_PRODUCT_SUPPLIERS_LIST](context, payload) {
         return FactoriesService.fetchProductSuppliersList(payload.product_type);
+    },
+    [BUY_PRODUCTS_FROM_SUPPLIERS](context, payload) {
+        return FactoriesService.buyProductsFromSuppliers(payload);
     }
 }
 const mutations = {

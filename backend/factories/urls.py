@@ -1,6 +1,6 @@
 from django.urls import path, register_converter
 from factories.views import FactoryBuildAPIView, FactoryToggleOperationalAPIView, FactoryTypeList, UserFactoriesList, \
-    FactoryDetail, FactoryUpgradeAPIView, ProductSuppliers
+    FactoryDetail, FactoryUpgradeAPIView, ProductSuppliers, ProductBuy
 from . import converters
 
 register_converter(converters.ProductTypeConverter, 'pt')
@@ -13,5 +13,6 @@ urlpatterns = [
          name='toggle-operational-factory'),
     path('factory-types', FactoryTypeList.as_view(), name='factory-types-list'),
     path('account/factories', UserFactoriesList.as_view(), name='account-factories'),
-    path('products/<pt:product_type>/suppliers', ProductSuppliers.as_view(), name='product-suppliers')
+    path('products/<pt:product_type>/suppliers', ProductSuppliers.as_view(), name='product-suppliers'),
+    path('products/buy', ProductBuy.as_view(), name='product-buy')
 ]
